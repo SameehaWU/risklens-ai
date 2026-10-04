@@ -8,13 +8,55 @@
 
 **[Launch RiskLens AI](https://app.snowflake.com/XVKVPMF-UJ52156/#/streamlit-apps/AML_COPILOT.RAW.RISKLENS_APP)** — Deployed on Snowflake (Streamlit-in-Snowflake)
 
+**[View App Preview (no login required)](docs/RiskLens_AI_App_Preview.html)** — Interactive mockup showing all 6 tabs with live data samples (download HTML and open in browser)
+
 | | |
 |---|---|
 | **Deployed App** | [app.snowflake.com/XVKVPMF-UJ52156 > RISKLENS_APP](https://app.snowflake.com/XVKVPMF-UJ52156/#/streamlit-apps/AML_COPILOT.RAW.RISKLENS_APP) |
+| **App Preview** | [Open HTML Preview](docs/RiskLens_AI_App_Preview.html) (download and open in browser) |
 | **Account** | `XVKVPMF-UJ52156` |
 | **Database** | `AML_COPILOT` |
 | **Team** | WU ERA |
 | **Track** | Risk and Regulatory Copilot |
+
+### App Screenshots
+
+<details>
+<summary>Click to expand screenshots from the live application</summary>
+
+#### Tab 1: AI Copilot
+ChatGPT-style interface with policy-backed responses. Every answer includes Summary, Evidence, Applicable Policy, Risk Assessment, Recommended Action, and Confidence sections with citation cards.
+
+![AI Copilot - Chat Interface](docs/screenshots/ai%20copilot%201.png)
+
+![AI Copilot - Response Detail](docs/screenshots/ai%20copilot%202.png)
+
+#### Tab 2: Dashboard
+Real-time KPI metrics (72 Critical Alerts, 98 Suspicious Accounts, 17 Open Investigations, 14 SAR Drafts Ready, 100% Compliance Health), signal trend chart with escalation tracking, live risk feed, and signals by detection rule breakdown.
+
+![Dashboard](docs/screenshots/dashboard.png)
+
+#### Tab 3: Investigations
+Signal-to-finding workflow pipeline, filterable signal table with status/rule/score controls, and Customer Risk 360 with transaction timeline, risk explainability, and AI-powered investigation actions.
+
+![Investigations](docs/screenshots/Investigations.png)
+
+#### Tab 4: Regulatory Reports
+AI-generated SAR narratives via Cortex Agent, case selection, and filing tracker with case IDs, customer names, case types, priority levels, and SAR filing references.
+
+![Regulatory Reports](docs/screenshots/regulatory%20reports.png)
+
+#### Tab 5: Evidence Center
+Cortex Search-powered policy retrieval with citation cards, case evidence timeline, and data quality dashboard with 6 automated checks.
+
+![Evidence Center](docs/screenshots/evidence%20center.png)
+
+#### Tab 6: CoCo Operations
+Architecture checklist (10/10 CoCo-built components), multi-agent orchestration workflow diagram, and pipeline health monitoring for all system components.
+
+![CoCo Operations](docs/screenshots/coco%20operations.png)
+
+</details>
 
 ---
 
@@ -160,6 +202,8 @@ risklens-ai/
   docs/
     architecture.md            # Detailed architecture documentation
     MVP_SUBMISSION.md          # MVP/Prototype submission document
+    RiskLens_AI_App_Preview.html  # Interactive HTML preview (no login required)
+    screenshots/               # Live app screenshots for each tab
   README.md                    # This file
 ```
 
