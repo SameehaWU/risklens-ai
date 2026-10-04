@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="snowflake-source" content="cortex-agent-authored" />
+  <title>RiskLens AI — Solution Deck</title>
+  <script type="application/json" id="snowflake-report-metadata">
+  {
+    "generated": "2026-10-04",
+    "intent": "Solution deck for RiskLens AI AML Investigation Copilot — Snowflake CoCo Hackathon",
+    "sections": [
+      { "id": "slide-deck", "title": "Full slide deck",
+        "dataSources": [{ "type": "documentation", "path": "docs/MVP_SUBMISSION.md" }, { "type": "documentation", "path": "docs/AML_Copilot_Data_Model_Documentation.md" }],
+        "producerNotes": "All content derived from project documentation and live Snowflake account XVKVPMF-UJ52156." }
+    ]
+  }
+  </script>
+  <style>
+    :root { color-scheme: light dark; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', -apple-system, system-ui, sans-serif; background: #0a0a1a; color: #e2e8f0; overflow: hidden; }
+
+    .deck { width: 100vw; height: 100vh; position: relative; }
+    .slide { width: 100vw; height: 100vh; display: none; flex-direction: column; justify-content: center; padding: 4vh 6vw; position: absolute; top: 0; left: 0; }
+    .slide.active { display: flex; }
+
+    /* Backgrounds */
+    .bg-dark { background: linear-gradient(135deg, #000000 0%, #0a0a1a 40%, #111827 70%, #1E3A5F 100%); }
+    .bg-navy { background: linear-gradient(135deg, #0a0a1a 0%, #111827 50%, #1a2744 100%); }
+    .bg-accent { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+    .bg-white { background: #f8fafc; color: #0f172a; }
+
+    /* Typography */
+    h1 { font-size: 3.2rem; font-weight: 800; letter-spacing: -1px; line-height: 1.15; }
+    h2 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 1.5rem; }
+    h3 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.8rem; }
+    p { font-size: 1.05rem; line-height: 1.65; color: #94a3b8; }
+    .slide.bg-white p { color: #475569; }
+    .slide.bg-white h2, .slide.bg-white h3 { color: #0f172a; }
+
+    .accent { color: #E8913A; }
+    .blue { color: #3b82f6; }
+    .green { color: #10b981; }
+    .red { color: #ef4444; }
+    .subtitle { font-size: 1.15rem; color: #94a3b8; margin-top: 0.5rem; font-weight: 400; }
+    .tag { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin: 3px; }
+    .tag-orange { background: rgba(232,145,58,0.15); color: #E8913A; border: 1px solid rgba(232,145,58,0.3); }
+    .tag-blue { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+    .tag-green { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+    .tag-purple { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+    .tag-red { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+    /* Layout */
+    .cols { display: flex; gap: 3vw; align-items: flex-start; }
+    .col { flex: 1; }
+    .col-wide { flex: 1.5; }
+
+    /* Cards */
+    .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.2rem 1.4rem; margin-bottom: 0.8rem; }
+    .slide.bg-white .card { background: #fff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .card-header { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: #E8913A; font-weight: 700; margin-bottom: 0.5rem; }
+
+    /* KPI row */
+    .kpi-row { display: flex; gap: 1.2rem; margin: 1.5rem 0; }
+    .kpi { flex: 1; text-align: center; padding: 1rem; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+    .kpi-val { font-size: 2rem; font-weight: 800; }
+    .kpi-lbl { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-top: 0.3rem; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 0.8rem 0; }
+    th { text-align: left; padding: 8px 12px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.8px; color: #E8913A; border-bottom: 2px solid rgba(232,145,58,0.3); font-weight: 700; }
+    td { padding: 7px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); color: #cbd5e1; }
+    .slide.bg-white th { color: #92400e; border-bottom-color: #fde68a; }
+    .slide.bg-white td { color: #334155; border-bottom-color: #e2e8f0; }
+
+    /* Flow */
+    .flow { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0; flex-wrap: wrap; }
+    .flow-step { padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 600; background: rgba(232,145,58,0.1); border: 1px solid rgba(232,145,58,0.25); color: #E8913A; }
+    .flow-arrow { color: #475569; font-size: 1.2rem; }
+
+    /* Checklist */
+    .check-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0; font-size: 0.92rem; }
+    .check-icon { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; flex-shrink: 0; background: rgba(16,185,129,0.15); color: #10b981; }
+
+    /* Architecture box */
+    .arch-box { font-family: 'Courier New', monospace; font-size: 0.72rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 1rem 1.2rem; line-height: 1.55; white-space: pre; overflow-x: auto; color: #94a3b8; }
+
+    /* Navigation */
+    .nav { position: fixed; bottom: 2vh; right: 4vw; display: flex; gap: 0.5rem; z-index: 100; }
+    .nav-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.5); color: #e2e8f0; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .nav-btn:hover { background: rgba(232,145,58,0.2); border-color: rgba(232,145,58,0.4); }
+    .slide-counter { position: fixed; bottom: 2.5vh; left: 4vw; font-size: 0.75rem; color: #475569; z-index: 100; }
+    .logo-bar { position: fixed; top: 2vh; left: 4vw; display: flex; align-items: center; gap: 0.6rem; z-index: 100; }
+    .logo-circle { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #B55D0C, #E8913A); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: #fff; }
+    .logo-text { font-size: 0.82rem; font-weight: 700; color: #e2e8f0; }
+
+    /* List */
+    ul { padding-left: 1.2rem; margin: 0.5rem 0; }
+    li { margin: 0.35rem 0; font-size: 0.95rem; color: #cbd5e1; line-height: 1.5; }
+    .slide.bg-white li { color: #334155; }
+    li strong { color: #E8913A; }
+    .slide.bg-white li strong { color: #92400e; }
+
+    /* Divider */
+    .divider { width: 60px; height: 3px; background: linear-gradient(90deg, #B55D0C, #E8913A); border-radius: 2px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+
+<div class="logo-bar">
+  <div class="logo-circle">&#128737;</div>
+  <span class="logo-text">RiskLens AI</span>
+</div>
+
+<div class="nav">
+  <button class="nav-btn" id="prevBtn">&#8592;</button>
+  <button class="nav-btn" id="nextBtn">&#8594;</button>
+</div>
+<div class="slide-counter" id="counter"></div>
+
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide bg-dark active" id="s1">
+    <div>
+      <div class="divider" style="margin-bottom:1.5rem;"></div>
+      <h1>RiskLens <span class="accent">AI</span></h1>
+      <h1 style="font-size:2.4rem;font-weight:400;color:#94a3b8;margin-top:0.3rem;">AML Investigation Copilot</h1>
+      <p style="font-size:1.2rem;margin-top:1.5rem;color:#64748b;">Monitor risk. Investigate signals. Generate governed findings.</p>
+      <div style="margin-top:2rem;">
+        <span class="tag tag-orange">Snowflake CoCo Hackathon</span>
+        <span class="tag tag-blue">Risk &amp; Regulatory Track</span>
+        <span class="tag tag-green">Team WU ERA</span>
+      </div>
+      <p style="margin-top:2rem;font-size:0.85rem;color:#475569;">Built entirely with Snowflake CoCo (Cortex Code) &mdash; Planning, Development, Execution, Testing</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: The Problem -->
+  <div class="slide bg-navy" id="s2">
+    <div>
+      <h2>The <span class="accent">Problem</span></h2>
+      <p style="font-size:1.1rem;max-width:800px;margin-bottom:2rem;">Banking compliance teams manage AML, fraud, and regulatory reporting with manual, siloed tools. The result: missed signals, slow investigations, and audit gaps.</p>
+      <div class="cols">
+        <div class="col">
+          <div class="card">
+            <div class="card-header">Volume</div>
+            <p style="font-size:0.92rem;">Hundreds of thousands of transactions daily requiring monitoring against multiple overlapping regulations</p>
+          </div>
+          <div class="card">
+            <div class="card-header">Speed</div>
+            <p style="font-size:0.92rem;">SAR filing within 30 days, CTR within 15 days, continuing activity reviews every 90 days</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <div class="card-header">Complexity</div>
+            <p style="font-size:0.92rem;">BSA, FATF, FinCEN, UAE AML/CFT &mdash; analysts must cross-reference activity against multiple regulatory frameworks</p>
+          </div>
+          <div class="card">
+            <div class="card-header">Auditability</div>
+            <p style="font-size:0.92rem;">Every decision must be traceable to specific evidence and policy. No single tool connects data to regulation to finding</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Our Solution -->
+  <div class="slide bg-accent" id="s3">
+    <div>
+      <h2>Our <span class="accent">Solution</span></h2>
+      <p style="max-width:800px;margin-bottom:1.5rem;">An end-to-end AML copilot that combines transaction data with policy text, letting compliance users ask questions and get governed, evidence-backed answers &mdash; from signal to finding to report.</p>
+      <div class="flow">
+        <div class="flow-step">Signal Detection</div><span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Investigation</div><span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Evidence</div><span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Decision</div><span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Regulatory Report</div>
+      </div>
+      <div class="cols" style="margin-top:1.5rem;">
+        <div class="col">
+          <h3 class="accent">Data + Policy Combined</h3>
+          <ul>
+            <li><strong>500K+ transactions</strong> queryable via Cortex Analyst</li>
+            <li><strong>11 policy documents</strong> indexed via Cortex Search</li>
+            <li>Every answer uses <strong>BOTH</strong> tools &mdash; no answer without a policy citation</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3 class="accent">Governed AI Responses</h3>
+          <ul>
+            <li><strong>Summary</strong> &mdash; direct answer</li>
+            <li><strong>Evidence</strong> &mdash; data with specific numbers</li>
+            <li><strong>Applicable Policy</strong> &mdash; exact citation</li>
+            <li><strong>Risk Assessment</strong> &mdash; HIGH / MEDIUM / LOW</li>
+            <li><strong>Recommended Action</strong> &mdash; file SAR, escalate, EDD</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Architecture -->
+  <div class="slide bg-navy" id="s4">
+    <div>
+      <h2>Technical <span class="accent">Architecture</span></h2>
+      <div class="arch-box">SNOWFLAKE ACCOUNT (XVKVPMF-UJ52156)
+
+[RAW]  13 tables          [PIPELINE]  Stream + Tasks      [ANALYTICS]  4 Dynamic Tables
+ CUSTOMERS (10K)           STREAM_NEW_TRANSACTIONS         DT_ENRICHED_TRANSACTIONS (500K)
+ TRANSACTIONS (500K)       DETECT_AML_SIGNALS (5m)         DT_CUSTOMER_RISK_FEATURES (10K)
+ BANK_ACCOUNTS (15K)       RUN_DQ_CHECKS (15m)             DT_CUSTOMER_RISK_SUMMARY (10K)
+ BENEFICIARIES (8K)        6 Stored Procedures             DT_DAILY_SIGNAL_DASHBOARD (174)
+ AML_SIGNALS (208)         GENERATED_REPORTS (PDF)          POLICY_SEARCH_SERVICE (13 chunks)
+ RISK_CASES (50)           PIPELINE_AUDIT_LOG
+ POLICY_DOCUMENTS (12)     POLICY_DOCUMENTS_STAGED
+
+[CORTEX AI]
+ Agent: AML_RISK_COPILOT (FROM SPECIFICATION, dual-tool)
+   Tool 1: risk_analytics  (Cortex Analyst + Semantic View)
+   Tool 2: policy_search   (Cortex Search + 11 AML policies)
+ Semantic View: AML_COPILOT_SV (13 tables, 11 rels, 7 VQRs)
+
+[STREAMLIT]  RISKLENS_APP (83KB, 6 tabs, ChatGPT-style UI)</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Snowflake Tech Stack -->
+  <div class="slide bg-dark" id="s5">
+    <div>
+      <h2>Snowflake <span class="accent">Tech Stack</span></h2>
+      <table>
+        <thead><tr><th>Feature</th><th>Implementation</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Cortex Agent</strong></td><td>AML_RISK_COPILOT &mdash; FROM SPECIFICATION, dual-tool orchestration (data + policy)</td></tr>
+          <tr><td><strong>Cortex Analyst</strong></td><td>Semantic View: 13 tables, 11 relationships, 7 VQRs, AI_SQL_GENERATION instruction</td></tr>
+          <tr><td><strong>Cortex Search</strong></td><td>11 AML policy documents indexed with snowflake-arctic-embed-m-v1.5</td></tr>
+          <tr><td><strong>Dynamic Tables</strong></td><td>4 tables, 5-min refresh: enriched transactions, risk features, risk summary, signal dashboard</td></tr>
+          <tr><td><strong>Streams + Tasks</strong></td><td>Incremental signal detection (5-min) + automated DQ monitoring (15-min)</td></tr>
+          <tr><td><strong>Stored Procedures</strong></td><td>6 procedures: SQL (detection), Python/fpdf2 (PDF), JavaScript (DQ, doc approval)</td></tr>
+          <tr><td><strong>Streamlit-in-Snowflake</strong></td><td>83KB app, 6 tabs, ChatGPT-style chat, Plotly charts, policy evidence panels</td></tr>
+          <tr><td><strong>Verified Queries</strong></td><td>7 VQRs for Cortex Analyst accuracy on common AML questions</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Detection Rules -->
+  <div class="slide bg-accent" id="s6">
+    <div>
+      <h2>Detection <span class="accent">Pipeline</span></h2>
+      <p style="margin-bottom:1rem;">6 deterministic rules &mdash; AI never invents signals. Each signal has RULE_ID, TRIGGER_DETAIL, and EVIDENCE_JSON.</p>
+      <table>
+        <thead><tr><th>Rule</th><th>Signal Type</th><th>Logic</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td>RULE_STRUCT_001</td><td>Structuring</td><td>3+ cash txns &lt;$10K summing &gt;$10K within 24h</td><td>60-95</td></tr>
+          <tr><td>RULE_RAPID_001</td><td>Rapid Movement</td><td>Inbound wire &gt;$50K, outbound &gt;80% within 48h</td><td>65-95</td></tr>
+          <tr><td>RULE_VELOC_001</td><td>Velocity Spike</td><td>Txn count &gt;3x 30-day daily average</td><td>50-90</td></tr>
+          <tr><td>RULE_GEO_001</td><td>Unusual Geography</td><td>Txn to HIGH-risk country, no prior history</td><td>70-85</td></tr>
+          <tr><td>RULE_DORM_001</td><td>Dormant Activation</td><td>Txn after 90+ days inactivity</td><td>55-90</td></tr>
+          <tr><td>RULE_BENEF_001</td><td>Beneficiary Burst</td><td>&gt;5 new beneficiaries within 7 days</td><td>50-85</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:1rem;">
+        <span class="tag tag-orange">Stream-triggered</span>
+        <span class="tag tag-blue">5-min cadence</span>
+        <span class="tag tag-green">Full audit trail</span>
+        <span class="tag tag-purple">Deduplication windows</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Application Tabs -->
+  <div class="slide bg-navy" id="s7">
+    <div>
+      <h2>Application <span class="accent">Overview</span></h2>
+      <p style="margin-bottom:1.2rem;">6 tabs covering the complete AML investigation lifecycle</p>
+      <div class="cols">
+        <div class="col">
+          <div class="card">
+            <div class="card-header">1. AI Copilot</div>
+            <p style="font-size:0.85rem;">ChatGPT-style chat with policy-backed responses, 8 suggested questions, clickable follow-ups, evidence panels</p>
+          </div>
+          <div class="card">
+            <div class="card-header">2. Dashboard</div>
+            <p style="font-size:0.85rem;">5 KPIs, signal trends, live risk feed, heatmap, top-10 customers, rule distribution</p>
+          </div>
+          <div class="card">
+            <div class="card-header">3. Investigations</div>
+            <p style="font-size:0.85rem;">Customer Risk 360, transaction timeline, beneficiary network, risk explainability, inline AI actions</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <div class="card-header">4. Regulatory Reports</div>
+            <p style="font-size:0.85rem;">AI-generated SAR narratives, PDF export with gradient headers, filing tracker</p>
+          </div>
+          <div class="card">
+            <div class="card-header">5. Evidence Center</div>
+            <p style="font-size:0.85rem;">Case evidence browser, direct Cortex Search for policies, data quality dashboard</p>
+          </div>
+          <div class="card">
+            <div class="card-header">6. CoCo Operations</div>
+            <p style="font-size:0.85rem;">10-item CoCo checklist, multi-agent workflow diagram, pipeline health, document governance</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: CoCo Usage -->
+  <div class="slide bg-dark" id="s8">
+    <div>
+      <h2>CoCo Usage Across <span class="accent">Full Lifecycle</span></h2>
+      <p style="margin-bottom:1.2rem;">Every component was built, tested, and deployed using Snowflake CoCo</p>
+      <div class="cols">
+        <div class="col">
+          <h3 class="blue">Planning</h3>
+          <div class="check-item"><span class="check-icon">&#10003;</span> Data model design (13 tables)</div>
+          <div class="check-item"><span class="check-icon">&#10003;</span> AML ontology (6 signal types, risk tiers)</div>
+          <div class="check-item"><span class="check-icon">&#10003;</span> Workflow: Signal &rarr; Finding &rarr; Report</div>
+          <h3 class="blue" style="margin-top:1rem;">Development</h3>
+          <div class="check-item"><span class="check-icon">&#10003;</span> 500K+ synthetic transactions</div>
+          <div class="check-item"><span class="check-icon">&#10003;</span> 6 stored procedures (SQL, Python, JS)</div>
+          <div class="check-item"><span class="check-icon">&#10003;</span> Semantic View (13 tables, 7 VQRs)</div>
+          <div class="check-item"><span class="check-icon">&#10003;</span> Agent spec with dual-tool orchestration</div>
+        </div>
+        <div class="col">
+          <h3 class="green">Execution</h3>
+          <div class="check-item"><span class="check-icon">&#10003;</span> Automated tasks (5-min + 15-min)</div>
+          <div class="check-item"><span class="check-icon">&#10003;</span> Dynamic table auto-refresh</div>
+          <div class="check-item"><span class="check-icon">&#10003;</span> Cortex Search indexing (1h lag)</div>
+          <div class="check-item"><span class="check-icon">&#10003;</span> Streamlit deployment to stage</div>
+          <h3 class="green" style="margin-top:1rem;">Testing &amp; Validation</h3>
+          <div class="check-item"><span class="check-icon">&#10003;</span> Agent debugging via DATA_AGENT_RUN</div>
+          <div class="check-item"><span class="check-icon">&#10003;</span> Policy search verification</div>
+          <div class="check-item"><span class="check-icon">&#10003;</span> Response structure validation</div>
+          <div class="check-item"><span class="check-icon">&#10003;</span> PDF iteration (3 versions)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: Ingenuity -->
+  <div class="slide bg-accent" id="s9">
+    <div>
+      <h2>CoCo <span class="accent">Ingenuity</span></h2>
+      <div class="cols">
+        <div class="col">
+          <div class="card">
+            <div class="card-header">Multi-Agent Orchestration</div>
+            <p style="font-size:0.85rem;">5 behavioral skills: Risk Analytics &rarr; Investigator &rarr; Policy Interpreter &rarr; Evidence Validator &rarr; Finding Generator</p>
+          </div>
+          <div class="card">
+            <div class="card-header">Automations &amp; Scheduled Runs</div>
+            <p style="font-size:0.85rem;">Stream-triggered detection (5-min), scheduled DQ checks (15-min), 4 auto-refreshing dynamic tables</p>
+          </div>
+          <div class="card">
+            <div class="card-header">Custom Tools &amp; Function Calling</div>
+            <p style="font-size:0.85rem;">Agent uses risk_analytics (text-to-SQL) + policy_search (semantic search). Investigation tab has inline AI action buttons</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <div class="card-header">Guardrails &amp; Graceful Fallback</div>
+            <p style="font-size:0.85rem;">Dual-tool enforcement, confidence levels (HIGH/MEDIUM/LOW), error diagnostics, DQ annotations, document quarantine, signal deduplication</p>
+          </div>
+          <div class="card">
+            <div class="card-header">Document &amp; Unstructured Processing</div>
+            <p style="font-size:0.85rem;">11 policy documents chunked (1500 chars, 200 overlap), governed approval workflow, Cortex Search indexing</p>
+          </div>
+          <div class="card">
+            <div class="card-header">Reusable Components</div>
+            <p style="font-size:0.85rem;">Semantic View reusable across consumers. Search service callable from any app. Reproducible from SQL scripts</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: Data Scale -->
+  <div class="slide bg-navy" id="s10">
+    <div>
+      <h2>Data <span class="accent">Scale</span></h2>
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-val accent">500K</div><div class="kpi-lbl">Transactions</div></div>
+        <div class="kpi"><div class="kpi-val blue">10K</div><div class="kpi-lbl">Customers</div></div>
+        <div class="kpi"><div class="kpi-val green">208</div><div class="kpi-lbl">AML Signals</div></div>
+        <div class="kpi"><div class="kpi-val" style="color:#a78bfa;">11</div><div class="kpi-lbl">Policy Docs</div></div>
+        <div class="kpi"><div class="kpi-val red">6</div><div class="kpi-lbl">Detection Rules</div></div>
+      </div>
+      <div class="cols" style="margin-top:1.5rem;">
+        <div class="col">
+          <table>
+            <thead><tr><th>Object</th><th>Count</th></tr></thead>
+            <tbody>
+              <tr><td>Bank Accounts</td><td>15,000</td></tr>
+              <tr><td>Beneficiaries</td><td>8,126</td></tr>
+              <tr><td>Risk Cases</td><td>50</td></tr>
+              <tr><td>Case Evidence</td><td>200</td></tr>
+              <tr><td>Countries</td><td>50</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col">
+          <table>
+            <thead><tr><th>Component</th><th>Count</th></tr></thead>
+            <tbody>
+              <tr><td>Dynamic Tables</td><td>4</td></tr>
+              <tr><td>Scheduled Tasks</td><td>2</td></tr>
+              <tr><td>Stored Procedures</td><td>6</td></tr>
+              <tr><td>Verified Queries</td><td>7</td></tr>
+              <tr><td>App Tabs</td><td>6</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: Demo Flow -->
+  <div class="slide bg-dark" id="s11">
+    <div>
+      <h2>Demo <span class="accent">Walkthrough</span></h2>
+      <table>
+        <thead><tr><th>#</th><th>Action</th><th>What You See</th></tr></thead>
+        <tbody>
+          <tr><td class="accent" style="font-weight:700;">1</td><td>Open <strong>AI Copilot</strong>, click suggested question</td><td>Policy-backed response with Summary, Evidence, Policy Citation, Risk Assessment</td></tr>
+          <tr><td class="accent" style="font-weight:700;">2</td><td>Ask follow-up question</td><td>Seamless multi-turn with data tables + policy citations</td></tr>
+          <tr><td class="accent" style="font-weight:700;">3</td><td>Switch to <strong>Dashboard</strong></td><td>KPI command center, live risk feed, signal trends, heatmap</td></tr>
+          <tr><td class="accent" style="font-weight:700;">4</td><td><strong>Investigations</strong>: filter, select customer</td><td>Risk 360: gauge, explainability donut, transaction timeline, network graph</td></tr>
+          <tr><td class="accent" style="font-weight:700;">5</td><td>Click <strong>AI Investigation</strong> button</td><td>Inline policy-backed analysis (isolated from Copilot)</td></tr>
+          <tr><td class="accent" style="font-weight:700;">6</td><td><strong>Regulatory Reports</strong>: generate SAR + PDF</td><td>AI narrative + downloadable PDF with gradient header</td></tr>
+          <tr><td class="accent" style="font-weight:700;">7</td><td><strong>Evidence Center</strong>: search "structuring"</td><td>Cortex Search results with policy titles and quoted text</td></tr>
+          <tr><td class="accent" style="font-weight:700;">8</td><td><strong>CoCo Operations</strong></td><td>Architecture checklist, orchestration diagram, pipeline health</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: Closing -->
+  <div class="slide bg-dark" id="s12">
+    <div style="text-align:center;">
+      <div class="divider" style="margin:0 auto 1.5rem;"></div>
+      <h1>RiskLens <span class="accent">AI</span></h1>
+      <p style="font-size:1.3rem;color:#94a3b8;margin-top:0.5rem;">Monitor risk. Investigate signals. Generate governed findings.</p>
+      <div style="margin-top:2rem;">
+        <span class="tag tag-orange">Cortex Agent</span>
+        <span class="tag tag-blue">Cortex Analyst</span>
+        <span class="tag tag-green">Cortex Search</span>
+        <span class="tag tag-purple">Dynamic Tables</span>
+        <span class="tag tag-red">Streams + Tasks</span>
+        <span class="tag tag-orange">Streamlit</span>
+        <span class="tag tag-blue">Semantic View</span>
+        <span class="tag tag-green">Python + SQL + JS</span>
+      </div>
+      <p style="margin-top:2.5rem;font-size:1rem;color:#64748b;">Built entirely with <strong style="color:#E8913A;">Snowflake CoCo</strong></p>
+      <p style="margin-top:1rem;font-size:0.85rem;color:#475569;">Team WU ERA &bull; Account XVKVPMF-UJ52156 &bull; AML_COPILOT.RAW.RISKLENS_APP</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var current = 0;
+  var slides = document.querySelectorAll('.slide');
+  var total = slides.length;
+  var counter = document.getElementById('counter');
+
+  function showSlide(n) {
+    if (n < 0) n = 0;
+    if (n >= total) n = total - 1;
+    for (var i = 0; i < total; i++) {
+      slides[i].classList.remove('active');
+    }
+    slides[n].classList.add('active');
+    current = n;
+    counter.textContent = (current + 1) + ' / ' + total;
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', function() { showSlide(current - 1); });
+  document.getElementById('nextBtn').addEventListener('click', function() { showSlide(current + 1); });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); showSlide(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); showSlide(current - 1); }
+    if (e.key === 'Home') { e.preventDefault(); showSlide(0); }
+    if (e.key === 'End') { e.preventDefault(); showSlide(total - 1); }
+  });
+
+  showSlide(0);
+</script>
+
+</body>
+</html>
