@@ -531,10 +531,21 @@ def get_pending_documents():
                UPLOADED_BY, UPLOADED_AT AS UPLOAD_TIMESTAMP, REVIEWED_BY AS APPROVED_BY, REVIEWED_AT AS APPROVAL_TIMESTAMP
         FROM AML_COPILOT.PIPELINE.POLICY_DOCUMENTS_STAGED ORDER BY UPLOADED_AT DESC""").to_pandas()
 
-@st.cache_data(ttl=300)
+def log_audit(event_type, event_source, entity_type, entity_id, detail):
+    """Write an audit log entry from the Streamlit app."""
+    try:
+        detail_esc = str(detail)[:500].replace("'", "''")
+        entity_id_esc = str(entity_id)[:50].replace("'", "''")
+        session.sql(f"""INSERT INTO AML_COPILOT.PIPELINE.PIPELINE_AUDIT_LOG
+            (EVENT_TYPE, EVENT_SOURCE, ENTITY_TYPE, ENTITY_ID, DETAIL, USER_ID)
+            VALUES ('{event_type}', '{event_source}', '{entity_type}', '{entity_id_esc}', '{detail_esc}', CURRENT_USER())""").collect()
+    except Exception:
+        pass
+
+@st.cache_data(ttl=120)
 def get_audit_log():
     return session.sql("""SELECT AUDIT_ID, EVENT_TYPE, EVENT_SOURCE, ENTITY_TYPE, ENTITY_ID, DETAIL, USER_ID, LOGGED_AT AS EVENT_TIMESTAMP
-        FROM AML_COPILOT.PIPELINE.PIPELINE_AUDIT_LOG ORDER BY LOGGED_AT DESC LIMIT 50""").to_pandas()
+        FROM AML_COPILOT.PIPELINE.PIPELINE_AUDIT_LOG ORDER BY LOGGED_AT DESC LIMIT 100""").to_pandas()
 
 @st.cache_data(ttl=300)
 def get_live_risk_feed():
@@ -852,15 +863,19 @@ with tab_invest:
                 with ac1:
                     if st.button("Generate SAR Draft", key="inv_sar", use_container_width=True):
                         st.session_state["inv_action"] = f"Generate an audit-ready SAR narrative for customer {selected}. Include subject information, activity summary, suspicious indicators, supporting evidence, and recommended action."
+                        log_audit("SAR_DRAFT_REQUESTED", "INVESTIGATIONS", "CUSTOMER", selected, "SAR draft generation initiated from Investigations tab")
                         if _rerun: _rerun()
                 with ac2:
                     if st.button("Escalate Case", key="inv_esc", use_container_width=True):
+                        log_audit("CASE_ESCALATED", "INVESTIGATIONS", "CUSTOMER", selected, "Case escalation requested")
                         st.info("Case escalation would be triggered here in production.")
                 with ac3:
                     if st.button("Request KYC Update", key="inv_kyc", use_container_width=True):
+                        log_audit("KYC_UPDATE_REQUESTED", "INVESTIGATIONS", "CUSTOMER", selected, "KYC refresh request submitted")
                         st.info("KYC refresh request would be submitted here.")
                 with ac4:
                     if st.button("AI Investigation", key="inv_ai", use_container_width=True):
+                        log_audit("AI_INVESTIGATION", "INVESTIGATIONS", "CUSTOMER", selected, "AI investigation initiated")
                         st.session_state["inv_action"] = f"Investigate customer {selected}. Show their risk score, recent signals with rule IDs and trigger details, suspicious transactions, and applicable policies."
                         if _rerun: _rerun()
 
@@ -992,6 +1007,7 @@ with tab_copilot:
         save_message(st.session_state.conversation_id, current_user, st.session_state.conversation_title,
                      "user", pending, len(st.session_state.messages),
                      st.session_state.thread_id, st.session_state.parent_message_id)
+        log_audit("COPILOT_QUERY", "AI_COPILOT", "CONVERSATION", st.session_state.conversation_id, pending[:200])
 
         with chat_container:
             with st.spinner("Thinking..."):
@@ -1068,6 +1084,7 @@ with tab_reports:
             with btn_col1:
                 if st.button("Generate SAR Narrative", key="gen_sar", use_container_width=True):
                     prompt = f"Generate an audit-ready SAR narrative for case {case_id} (customer {case_row['CUSTOMER_ID']}). Include: Subject Information, Activity Summary, Suspicious Indicators, Supporting Evidence, and Recommended Action."
+                    log_audit("SAR_NARRATIVE_GENERATED", "REGULATORY_REPORTS", "CASE", case_id, f"SAR narrative generated for customer {case_row['CUSTOMER_ID']}")
                     with st.spinner("Generating regulatory narrative..."):
                         try:
                             resp = call_agent(prompt)
@@ -1080,12 +1097,14 @@ with tab_reports:
 
             with btn_col2:
                 if st.button("Generate PDF Report", key="export_drive", use_container_width=True):
+                    log_audit("PDF_REPORT_REQUESTED", "REGULATORY_REPORTS", "CASE", case_id, "PDF report generation initiated")
                     with st.spinner("Generating PDF report..."):
                         try:
                             result = session.sql(f"CALL AML_COPILOT.PIPELINE.SP_EXPORT_REPORT_TO_DRIVE('{_esc(case_id)}')").collect()
                             result_text = str(result[0][0]) if result else "No result"
                             if "successfully" in result_text.lower():
                                 st.success(result_text)
+                                log_audit("PDF_REPORT_GENERATED", "REGULATORY_REPORTS", "CASE", case_id, result_text[:200])
                                 import base64
                                 pdf_row = session.sql(f"""SELECT FILENAME, PDF_DATA FROM AML_COPILOT.PIPELINE.GENERATED_REPORTS
                                     WHERE CASE_ID = '{_esc(case_id)}' ORDER BY GENERATED_AT DESC LIMIT 1""").collect()
@@ -1155,6 +1174,7 @@ with tab_evidence:
         st.markdown("#### Policy Document Search")
         policy_query = st.text_input("Search AML policies...", key="policy_search", placeholder="e.g., structuring, wire transfer, KYC, EDD, SAR filing")
         if policy_query:
+            log_audit("POLICY_SEARCH", "EVIDENCE_CENTER", "POLICY", "SEARCH", f"Query: {policy_query[:200]}")
             with st.spinner("Searching policies..."):
                 try:
                     search_results = session.sql(f"""SELECT PARSE_JSON(SNOWFLAKE.CORTEX.SEARCH_PREVIEW(
@@ -1287,6 +1307,7 @@ with tab_ops:
                             if st.button("Approve", key=f"approve_{doc_id}", use_container_width=True):
                                 try:
                                     session.sql(f"CALL AML_COPILOT.PIPELINE.SP_APPROVE_POLICY_DOCUMENT('{doc_id}', 'APPROVE', 'SAMEEHA', '{notes.replace(chr(39), chr(39)+chr(39))}')").collect()
+                                    log_audit("POLICY_APPROVED", "DOCUMENT_GOVERNANCE", "DOCUMENT", doc_id, f"Approved: {title}. Notes: {notes[:100]}")
                                     st.success(f"Approved: {title}")
                                     if _rerun: _rerun()
                                 except Exception as e: st.error(f"Failed: {e}")
@@ -1294,6 +1315,7 @@ with tab_ops:
                             if st.button("Reject", key=f"reject_{doc_id}", use_container_width=True):
                                 try:
                                     session.sql(f"CALL AML_COPILOT.PIPELINE.SP_APPROVE_POLICY_DOCUMENT('{doc_id}', 'REJECT', 'SAMEEHA', '{notes.replace(chr(39), chr(39)+chr(39))}')").collect()
+                                    log_audit("POLICY_REJECTED", "DOCUMENT_GOVERNANCE", "DOCUMENT", doc_id, f"Rejected: {title}. Notes: {notes[:100]}")
                                     st.warning(f"Rejected: {title}")
                                     if _rerun: _rerun()
                                 except Exception as e: st.error(f"Failed: {e}")
