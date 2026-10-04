@@ -7,6 +7,7 @@
 ### Live Application
 
 **[Launch RiskLens AI](https://app.snowflake.com/XVKVPMF-UJ52156/#/streamlit-apps/AML_COPILOT.RAW.RISKLENS_APP)** — Deployed on Snowflake (Streamlit-in-Snowflake)
+**[Shareable Link View Access](https://app.snowflake.com/streamlit/xvkvpmf/uj52156/#/apps/y6l7azxdyluj6rulench)** 
 
 **[View App Preview (no login required)](docs/RiskLens_AI_App_Preview.html)** — Interactive mockup showing all 6 tabs with live data samples (download HTML and open in browser)
 
